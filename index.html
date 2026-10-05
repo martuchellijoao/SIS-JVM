@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Financeiro">
+  <title>Financeiro</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="tela-login" class="login" hidden>
+  <form id="form-login" class="login-card" autocomplete="on">
+    <img src="icons/icon-192.png" alt="" class="login-logo">
+    <h1>Financeiro</h1>
+    <p class="muted">Pessoal e Escritório TI</p>
+    <label>E-mail
+      <input id="login-email" type="email" autocomplete="username" inputmode="email" required>
+    </label>
+    <label>Senha
+      <input id="login-senha" type="password" autocomplete="current-password" required>
+    </label>
+    <button type="submit" class="btn btn-primario">Entrar</button>
+    <p id="login-erro" class="erro" role="alert"></p>
+  </form>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="tela-app" hidden>
+  <header class="topo">
+    <div class="seg" id="seg-espaco" role="tablist">
+      <button data-espaco="pessoal" role="tab">Pessoal</button>
+      <button data-espaco="escritorio" role="tab">Escritório TI</button>
+    </div>
+    <button class="icone" id="btn-sair" aria-label="Sair" title="Sair">
+      <svg viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H4"/></svg>
+    </button>
+  </header>
+
+  <div class="mes" id="barra-mes">
+    <button class="icone" id="mes-ant" aria-label="Mês anterior"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <strong id="mes-nome"></strong>
+    <button class="icone" id="mes-prox" aria-label="Próximo mês"><svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg></button>
+  </div>
+
+  <main>
+    <section id="aba-inicio"></section>
+    <section id="aba-lancamentos" hidden></section>
+    <section id="aba-categorias" hidden></section>
+  </main>
+
+  <button class="fab" id="btn-novo" aria-label="Novo lançamento">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <nav class="abas">
+    <button data-aba="inicio" class="ativa">
+      <svg viewBox="0 0 24 24"><path d="M4 13h6V4H4zM14 20h6v-9h-6zM14 4v4h6V4zM4 20h6v-3H4z"/></svg>Início
+    </button>
+    <button data-aba="lancamentos">
+      <svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Lançamentos
+    </button>
+    <button data-aba="categorias">
+      <svg viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01"/></svg>Categorias
+    </button>
+  </nav>
+</div>
+
+<!-- ============ LANÇAMENTO ============ -->
+<dialog id="dlg-lanc" class="folha">
+  <form id="form-lanc" method="dialog">
+    <div class="folha-topo">
+      <h2 id="lanc-titulo">Novo lançamento</h2>
+      <button type="button" class="icone" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="seg seg-tipo" id="lanc-tipo">
+      <button type="button" data-tipo="saida">Saída</button>
+      <button type="button" data-tipo="entrada">Entrada</button>
+    </div>
+    <label class="valor">
+      <span>R$</span>
+      <input id="lanc-valor" inputmode="decimal" placeholder="0,00" autocomplete="off" required>
+    </label>
+    <div class="rotulo">Categoria</div>
+    <div class="chips" id="lanc-cats"></div>
+    <div class="linha2">
+      <label>Data <input id="lanc-data" type="date" required></label>
+    </div>
+    <label>Descrição (opcional)
+      <input id="lanc-desc" maxlength="200" autocomplete="off">
+    </label>
+    <p class="erro" id="lanc-erro" role="alert"></p>
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <button type="button" class="btn btn-perigo" id="lanc-excluir" hidden>Excluir lançamento</button>
+  </form>
+</dialog>
+
+<!-- ============ CATEGORIA ============ -->
+<dialog id="dlg-cat" class="folha">
+  <form id="form-cat" method="dialog">
+    <div class="folha-topo">
+      <h2 id="cat-titulo">Nova categoria</h2>
+      <button type="button" class="icone" data-fechar aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="seg seg-tipo" id="cat-tipo">
+      <button type="button" data-tipo="saida">Saída</button>
+      <button type="button" data-tipo="entrada">Entrada</button>
+    </div>
+    <label>Nome <input id="cat-nome" maxlength="40" required autocomplete="off"></label>
+    <p class="erro" id="cat-erro" role="alert"></p>
+    <button type="submit" class="btn btn-primario">Salvar</button>
+    <button type="button" class="btn btn-secundario" id="cat-arquivar" hidden>Arquivar categoria</button>
+  </form>
+</dialog>
+
+<div id="toast" role="status"></div>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
