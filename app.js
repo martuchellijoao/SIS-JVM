@@ -50,7 +50,7 @@ async function criarApi() {
   if (!SUPABASE_URL || SUPABASE_URL.includes('SEU-PROJETO')) {
     throw new Error('Configure o arquivo config.js com os dados do Supabase.');
   }
-  const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/+esm');
+  const { createClient } = await import('./supabase.js');
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
   });
@@ -153,17 +153,29 @@ async function iniciar() {
     return;
   }
   ligarEventos();
-  const sessao = await api.sessao().catch(() => null);
+  // não deixa a tela presa se o Supabase demorar a responder
+  const limite = new Promise((r) => setTimeout(() => r(null), 8000));
+  const sessao = await Promise.race([api.sessao().catch(() => null), limite]);
   if (sessao) await entrarNoApp(); else mostrarLogin();
 }
 
+// Mostra na tela qualquer erro inesperado (em vez de ficar tudo em branco)
+function mostrarErroFatal(msg) {
+  const c = $('#carregando');
+  if (c && !c.hidden) $('#carregando-erro').textContent = 'Erro ao iniciar: ' + msg;
+}
+window.addEventListener('error', (e) => mostrarErroFatal(e.message));
+window.addEventListener('unhandledrejection', (e) => mostrarErroFatal(e.reason?.message || e.reason));
+
 function mostrarLogin(msg = '') {
+  $('#carregando').hidden = true;
   $('#tela-app').hidden = true;
   $('#tela-login').hidden = false;
   $('#login-erro').textContent = msg;
 }
 
 async function entrarNoApp() {
+  $('#carregando').hidden = true;
   $('#tela-login').hidden = true;
   $('#tela-app').hidden = false;
   try {

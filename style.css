@@ -185,3 +185,8 @@ dialog.folha::backdrop { background: rgb(0 0 0 / .45); }
 }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 .mt { margin-top: 12px; }
+
+/* ---------- Carregando ---------- */
+.carregando { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 24px; text-align: center; color: var(--suave); }
+.spinner { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--borda); border-top-color: var(--primaria); animation: gira .8s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
