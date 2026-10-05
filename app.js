@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js?v=3';
 
 // ================= Configuração =================
 const ESPACOS = { pessoal: 'Pessoal', escritorio: 'Escritório TI' };
@@ -50,7 +50,7 @@ async function criarApi() {
   if (!SUPABASE_URL || SUPABASE_URL.includes('SEU-PROJETO')) {
     throw new Error('Configure o arquivo config.js com os dados do Supabase.');
   }
-  const { createClient } = await import('./supabase.js');
+  const { createClient } = await import('./supabase.js?v=3');
   const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
   });
@@ -523,7 +523,7 @@ function ligarEventos() {
 
 // ================= PWA =================
 if ('serviceWorker' in navigator && !DEMO) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).catch(() => {});
 }
 
 iniciar();

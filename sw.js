@@ -1,6 +1,6 @@
 // Service worker: guarda os arquivos do app para abrir rápido.
 // Busca sempre a versão nova primeiro (network-first) e usa o cache se estiver sem internet.
-const CACHE = 'financeiro-v2';
+const CACHE = 'financeiro-v3';
 const ARQUIVOS = ['./', './index.html', './style.css', './app.js', './supabase.js', './config.js', './manifest.json', './icons/icon-192.png', './icons/icon-512.png'];
 
 self.addEventListener('install', (e) => {
@@ -18,7 +18,7 @@ self.addEventListener('fetch', (e) => {
   // Só arquivos do próprio app; dados do Supabase nunca ficam em cache
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
   e.respondWith(
-    fetch(req)
+    fetch(req, { cache: 'no-cache' })
       .then((res) => {
         if (res.ok) { const copia = res.clone(); caches.open(CACHE).then((c) => c.put(req, copia)); }
         return res;
